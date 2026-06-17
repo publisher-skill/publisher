@@ -2,61 +2,60 @@
 
 [English](./README.md) | 简体中文
 
-Publish HTML frontend games to the AI Game MCP platform.
+将 HTML 前端游戏发布到 AI Game MCP 平台。
 
-## Install to Claude Code
+## 安装到 Claude Code
 
-Extract this directory to:
+将此目录解压到：
 
 ```text
 ~/.claude/skills/publisher
 ```
 
-Then use the Skill inside Claude Code.
+然后在 Claude Code 中使用该 Skill。
 
-## Platform URL
+## 平台地址
 
 ```text
 https://ai-pub.pushwebly.com
 ```
 
-## Save Credentials for Automatic Token Retrieval
+## 保存凭据以自动获取 Token
 
-On first use, run this in the Skill directory:
+首次使用时，在 Skill 目录下运行：
 
 ```bash
 python scripts/save-credentials.py
 ```
 
-Enter your username and password when prompted. The script will automatically
-log in / register and save the configuration to:
+根据提示输入用户名和密码。脚本将自动登录/注册，并将配置保存到：
 
 ```text
 ~/.ai-game-publisher/config.json
 ```
 
-On subsequent uses, run:
+后续使用时，运行：
 
 ```bash
 python scripts/get-token.py
 ```
 
-It will refresh the token using the saved credentials and output:
+它将使用已保存的凭据刷新 Token，并输出：
 
 ```text
 Bearer <TOKEN>
 ```
 
-Clear the locally stored credentials:
+清除本地存储的凭据：
 
 ```bash
 python scripts/clear-credentials.py
 ```
 
-## MCP Tools
+## MCP 工具
 
-- `user_login_or_register`
-- `game_publish`
-- `game_list`
-- `game_build_apk`
-- `game_publish_and_build_apk`
+- `user_login_or_register` — 用户登录或注册
+- `game_publish` — 发布游戏
+- `game_list` — 游戏列表
+- `game_build_apk` — 构建 APK
+- `game_publish_and_build_apk` — 发布游戏并构建 APK

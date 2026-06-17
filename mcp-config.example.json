@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "publisher": {
+      "type": "streamable-http",
+      "url": "https://ai-pub.pushwebly.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <TOKEN>"
+      }
+    }
+  }
+}

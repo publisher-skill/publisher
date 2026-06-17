@@ -7,82 +7,80 @@ description: Publish HTML frontend games to the AI Game MCP platform. Supports u
 
 [English](./SKILL.md) | 简体中文
 
-This Skill is used to publish HTML frontend games to the AI Game MCP platform
-and optionally package them as Android APKs in one step.
+本 Skill 用于将 HTML 前端游戏发布到 AI Game MCP 平台，并可选择同时打包为 Android APK。
 
-Platform URL:
+平台地址：
 
 ```text
 https://ai-pub.pushwebly.com
 ```
 
-## Applicable Scenarios
+## 适用场景
 
-Use this Skill when the user asks you to:
+当用户要求你执行以下操作时使用本 Skill：
 
-- Publish an HTML game
-- Upload a zip package containing `index.html` or `index.htm`
-- Obtain the game access URL
-- Query the list of games already published by the user
-- Package a published game into an Android APK
-- Publish a game and generate the APK at the same time (one-step)
-- Configure or invoke the AI Game MCP service for the user
+- 发布一个 HTML 游戏
+- 上传包含 `index.html` 或 `index.htm` 的 zip 包
+- 获取游戏访问 URL
+- 查询用户已发布的游戏列表
+- 将已发布的游戏打包成 Android APK
+- 同时发布游戏并生成 APK（一步完成）
+- 为用户配置或调用 AI Game MCP 服务
 
-## Platform Capabilities
+## 平台能力
 
-Backend MCP tools (5 in total):
+后端 MCP 工具（共 5 个）：
 
-**User:**
+**用户：**
 
 1. `user_login_or_register`
-   - Log in or register a user
-   - Registers if the user does not exist; otherwise verifies the password and logs in
-   - Returns a token
+   - 登录或注册用户
+   - 用户不存在则注册；否则验证密码并登录
+   - 返回 token
 
-**Game Publishing:**
+**游戏发布：**
 
 2. `game_publish`
-   - Publish a zip game package
-   - Parameters include the Bearer token, game name, and server-side local zip path
-   - Returns the game URL
+   - 发布 zip 游戏包
+   - 参数包括 Bearer token、游戏名称、服务器端本地 zip 路径
+   - 返回游戏 URL
 
 3. `game_list`
-   - Query the list of games published by the current user
+   - 查询当前用户已发布的游戏列表
 
-**APK Packaging:**
+**APK 打包：**
 
 4. `game_build_apk`
-   - Package a published game into an Android APK
-   - Parameters include the Bearer token and gameId
-   - Returns the APK download link
+   - 将已发布的游戏打包成 Android APK
+   - 参数包括 Bearer token 和 gameId
+   - 返回 APK 下载链接
 
 5. `game_publish_and_build_apk`
-   - Publish the zip + build the APK in one step
-   - Parameters include the Bearer token, game name, and zip path
-   - Returns both the game URL and the APK download link
+   - 一步完成：发布 zip + 构建 APK
+   - 参数包括 Bearer token、游戏名称和 zip 路径
+   - 同时返回游戏 URL 和 APK 下载链接
 
-## Local Credential Storage and Automatic Token Retrieval
+## 本地凭据存储与自动获取 Token
 
-This Skill supports saving the username and password to a private configuration
-file on the user's local machine:
+本 Skill 支持将用户名和密码保存到用户本机的私有配置文件中：
 
 ```text
 ~/.publisher/config.json
 ```
 
-On first use, ask the user to run this in the Skill directory:
+首次使用时，请用户在 Skill 目录下运行：
 
 ```bash
 python scripts/save-credentials.py
 ```
 
-Arguments can also be passed directly:
+也可以直接传参：
 
 ```bash
-python scripts/save-credentials.py "username" "password"
+python scripts/save-credentials.py "用户名" "密码"
 ```
 
-The script calls the login/register API to automatically obtain a token and saves:
+脚本会调用登录/注册接口自动获取 token，并保存：
 
 ```json
 {
@@ -94,36 +92,34 @@ The script calls the login/register API to automatically obtain a token and save
 }
 ```
 
-Before subsequent uses, if a token is needed, prefer running:
+后续使用前，如需 token，优先运行：
 
 ```bash
 python scripts/get-token.py
 ```
 
-It reads the locally saved username/password, automatically re-logs in to obtain
-the latest token, and outputs:
+它会读取本地保存的用户名/密码，自动重新登录获取最新 token，并输出：
 
 ```text
 Bearer <TOKEN>
 ```
 
-If the user wants to clear the local credentials:
+如果用户想清除本地凭据：
 
 ```bash
 python scripts/clear-credentials.py
 ```
 
-Security requirements:
+安全要求：
 
-- Do not write the user's username/password into the Skill zip package.
-- Only save to the user's local `~/.publisher/config.json`.
-- On Linux/Mac the script will try to set the config file permission to `600`.
-- If the user explicitly provides a token in the current conversation, prefer
-  that token; otherwise use `scripts/get-token.py` to obtain one.
+- 不要将用户的用户名/密码写入 Skill zip 包中。
+- 仅保存到用户本地的 `~/.publisher/config.json`。
+- 在 Linux/Mac 上，脚本会尝试将配置文件权限设置为 `600`。
+- 如果用户在当前对话中明确提供了 token，优先使用该 token；否则使用 `scripts/get-token.py` 获取。
 
-## MCP Integration Configuration
+## MCP 集成配置
 
-After the user logs in, replace the placeholder below with the token:
+用户登录后，将以下占位符替换为实际 token：
 
 ```json
 {
@@ -139,44 +135,41 @@ After the user logs in, replace the placeholder below with the token:
 }
 ```
 
-## Pre-publish Checklist
+## 发布前检查清单
 
-Before publishing, confirm that:
+发布前请确认：
 
-1. The file is in `.zip` format.
-2. The zip contains `index.html` or `index.htm`.
-3. If the zip has nested directories, the directory containing the entry file can be located.
-4. The game name is not empty.
-5. The user already has a token; if not, first run `python scripts/get-token.py`
-   to obtain one automatically; if there is no local configuration yet, guide
-   the user to run `python scripts/save-credentials.py` to save their credentials.
+1. 文件格式为 `.zip`。
+2. zip 中包含 `index.html` 或 `index.htm`。
+3. 如果 zip 有嵌套目录，能够定位到包含入口文件的目录。
+4. 游戏名称不为空。
+5. 用户已有 token；如果没有，先运行 `python scripts/get-token.py` 自动获取；如果本地还没有配置，引导用户运行 `python scripts/save-credentials.py` 保存凭据。
 
-## Recommended Workflow
+## 推荐工作流
 
-### 1. Obtain a Token
+### 1. 获取 Token
 
-If the user does not have a token, first try to obtain one automatically:
+如果用户还没有 token，先尝试自动获取：
 
 ```bash
 python scripts/get-token.py
 ```
 
-If it reports that the configuration does not exist, guide the user to save their credentials:
+如果提示配置不存在，引导用户保存凭据：
 
 ```bash
 python scripts/save-credentials.py
 ```
 
-You can also guide the user to visit:
+也可以引导用户访问：
 
 ```text
 https://ai-pub.pushwebly.com
 ```
 
-Click "Login" in the upper-right corner and enter the username and password.
-The system will automatically log in or register and return a token.
+点击右上角"登录"，输入用户名和密码。系统将自动登录或注册并返回 token。
 
-Alternatively, use the HTTP API:
+或者使用 HTTP API：
 
 ```bash
 curl -X POST https://ai-pub.pushwebly.com/api/auth/login-or-register \
@@ -184,35 +177,34 @@ curl -X POST https://ai-pub.pushwebly.com/api/auth/login-or-register \
   -d '{"username":"alice","password":"123456"}'
 ```
 
-Verify whether the token is valid:
+验证 token 是否有效：
 
 ```bash
 curl https://ai-pub.pushwebly.com/api/auth/verify-token \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
-If the token is invalid or expired, the API returns 401 with a clear error
-message such as `Invalid or expired token`.
+如果 token 无效或已过期，API 返回 401 并附带明确的错误信息，如 `Invalid or expired token`。
 
-### 2. Publish a Game
+### 2. 发布游戏
 
-If MCP tools are available, call:
+如果 MCP 工具可用，调用：
 
 ```text
 game_publish
 ```
 
-Parameters:
+参数：
 
 ```json
 {
   "authorization": "Bearer <TOKEN>",
-  "projectName": "game-name",
-  "zipFilePath": "server-side local zip path"
+  "projectName": "游戏名称",
+  "zipFilePath": "服务器端本地 zip 路径"
 }
 ```
 
-If only the HTTP API is available:
+如果只有 HTTP API 可用：
 
 ```bash
 curl -X POST https://ai-pub.pushwebly.com/api/games/publish \
@@ -221,15 +213,15 @@ curl -X POST https://ai-pub.pushwebly.com/api/games/publish \
   -F "file=@demo.zip"
 ```
 
-### 3. Query the Game List
+### 3. 查询游戏列表
 
-If MCP tools are available, call:
+如果 MCP 工具可用，调用：
 
 ```text
 game_list
 ```
 
-Parameters:
+参数：
 
 ```json
 {
@@ -237,22 +229,22 @@ Parameters:
 }
 ```
 
-HTTP API:
+HTTP API：
 
 ```bash
 curl https://ai-pub.pushwebly.com/api/games/my \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
-### 4. Build an APK
+### 4. 构建 APK
 
-If the user wants to package a published game into an Android APK:
+如果用户想将已发布的游戏打包成 Android APK：
 
 ```text
 game_build_apk
 ```
 
-Parameters:
+参数：
 
 ```json
 {
@@ -261,7 +253,7 @@ Parameters:
 }
 ```
 
-HTTP API:
+HTTP API：
 
 ```bash
 curl -X POST https://ai-pub.pushwebly.com/api/apk/build \
@@ -270,7 +262,7 @@ curl -X POST https://ai-pub.pushwebly.com/api/apk/build \
   -d '{"gameId": 12}'
 ```
 
-Response:
+响应示例：
 
 ```json
 {
@@ -286,21 +278,21 @@ Response:
 }
 ```
 
-Download the APK:
+下载 APK：
 
 ```bash
 curl -O "https://ai-pub.pushwebly.com/api/apk/download/airplane-war_aB3xYz.apk"
 ```
 
-### 5. Publish and Build (One-step)
+### 5. 发布并构建（一步完成）
 
-The most common approach — publish the zip and generate the APK at the same time:
+最常用的方式——同时发布 zip 并生成 APK：
 
 ```text
 game_publish_and_build_apk
 ```
 
-Parameters:
+参数：
 
 ```json
 {
@@ -310,7 +302,7 @@ Parameters:
 }
 ```
 
-The response contains both the game URL and the APK download link:
+响应中包含游戏 URL 和 APK 下载链接：
 
 ```json
 {
@@ -324,7 +316,7 @@ The response contains both the game URL and the APK download link:
 }
 ```
 
-HTTP API (multipart upload + build):
+HTTP API（multipart 上传 + 构建）：
 
 ```bash
 curl -X POST https://ai-pub.pushwebly.com/api/apk/publish-and-build \
@@ -333,57 +325,56 @@ curl -X POST https://ai-pub.pushwebly.com/api/apk/publish-and-build \
   -F "file=@game.zip"
 ```
 
-## Reply Format to Users
+## 回复用户的格式
 
-### Publish Only
-
-```
-Game published successfully!
-
-Game name: <projectName>
-Access URL: <url>
-Status: enabled
-```
-
-### Publish + Build
+### 仅发布
 
 ```
-Game published successfully!
+游戏发布成功！
 
-Game name: <projectName>
-Access URL: <playUrl>
-APK download: <apkUrl>
-
-Transfer the APK to your phone to install and play. Each APK has a unique
-package name and will not overwrite other games.
+游戏名称：<projectName>
+访问地址：<url>
+状态：enabled
 ```
 
-### Build APK for an Existing Game Only
+### 发布 + 构建
 
 ```
-APK build complete!
+游戏发布成功！
 
-Game name: <projectName>
-APK download: <apkUrl>
+游戏名称：<projectName>
+访问地址：<playUrl>
+APK 下载：<apkUrl>
+
+将 APK 传输到手机即可安装游玩。每个 APK 拥有唯一的包名，不会覆盖其他游戏。
 ```
 
-### Failure
+### 仅为已有游戏构建 APK
 
-Clearly state the failure reason, for example:
+```
+APK 构建完成！
 
-- The zip does not contain index.html or index.htm
-- The token is invalid or expired
-- The zip file path does not exist
-- The game name is empty
-- APK build timed out (the build takes about 2-3 minutes, please retry later)
-- The server is not configured with the Android SDK (contact the administrator)
+游戏名称：<projectName>
+APK 下载：<apkUrl>
+```
 
-## Notes
+### 失败
 
-- Do not ask the user for any sensitive information other than the plaintext password.
-- The token is only used for `Authorization: Bearer` and must not be leaked to unrelated third parties.
-- The game access URL can be shared publicly.
-- If a game is disabled in the backend, the access URL returns 403.
-- APK builds take 1-3 minutes; duplicate requests during a build are automatically deduplicated.
-- Each APK has a unique package name (`com.pushwebly.g{playToken}`) so installations do not overwrite each other.
-- `game_publish_and_build_apk` is the recommended usage: publish and build in one step.
+明确说明失败原因，例如：
+
+- zip 中不包含 index.html 或 index.htm
+- token 无效或已过期
+- zip 文件路径不存在
+- 游戏名称为空
+- APK 构建超时（构建大约需要 2-3 分钟，请稍后重试）
+- 服务器未配置 Android SDK（联系管理员）
+
+## 注意事项
+
+- 除了明文密码外，不要向用户索要其他敏感信息。
+- token 仅用于 `Authorization: Bearer`，不得泄露给无关第三方。
+- 游戏访问 URL 可以公开分享。
+- 如果游戏在后端被禁用，访问 URL 将返回 403。
+- APK 构建需要 1-3 分钟；构建期间的重复请求会自动去重。
+- 每个 APK 拥有唯一的包名（`com.pushwebly.g{playToken}`），因此安装不会相互覆盖。
+- 推荐使用 `game_publish_and_build_apk`：一步完成发布和构建。

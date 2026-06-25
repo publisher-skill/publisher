@@ -17,7 +17,7 @@
 ## 平台地址
 
 ```text
-https://ai-pub.pushwebly.com
+https://pushwebly.com
 ```
 
 ## 怎么用（无需 Python）

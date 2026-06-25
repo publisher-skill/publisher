@@ -1,6 +1,6 @@
 ---
 name: publisher
-version: 1.1.0
+version: 1.1.2
 description: 把 HTML 前端项目发布到发布平台。支持上传 zip 项目包、获取可访问 URL、查询已发布项目列表、把项目打包成安卓 APK、修改已发布应用的公开/私密可见性。无需用户安装 Python，Claude 可直接通过 MCP 工具或 HTTP 接口完成全流程。
 ---
 

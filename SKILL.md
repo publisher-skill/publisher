@@ -1,6 +1,6 @@
 ---
 name: publisher
-version: 1.1.0
+version: 1.1.2
 description: Publish HTML frontend projects to the PushWebly publishing platform, list published projects, obtain shareable project URLs, change a published app's public/private visibility, and package published HTML projects into Android APKs. Use when Codex needs to publish a local zip project, publish and build an APK, build an APK for an existing published project, toggle an app between public and private, list a user's published projects, or log in/register for this publishing platform. Codex should use HTTP APIs with curl when remote MCP tools are not mounted.
 ---
 

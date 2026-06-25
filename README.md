@@ -36,18 +36,7 @@ full agent workflow.
 Credentials are saved locally to `~/.publisher/config.json` so subsequent runs
 refresh the token automatically.
 
-## Optional: Python scripts (advanced / CI users)
-
-If you prefer the command line, the `scripts/` folder offers an equivalent path.
-Most users can ignore this.
-
-```bash
-python scripts/save-credentials.py   # save username/password, fetch token
-python scripts/get-token.py          # refresh and print "Bearer <TOKEN>"
-python scripts/clear-credentials.py  # delete local credentials
-```
-
-Saved to `~/.publisher/config.json`.
+ 
 
 ## MCP Tools
 

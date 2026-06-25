@@ -17,7 +17,7 @@ Then use the Skill inside Claude Code.
 ## Platform URL
 
 ```text
-https://ai-pub.pushwebly.com
+https://pushwebly.com
 ```
 
 ## How to use (no Python required)

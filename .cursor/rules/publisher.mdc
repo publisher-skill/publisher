@@ -1,0 +1,126 @@
+---
+description: Publish HTML frontend projects to the publishing platform (publisher). Use when the user wants to publish/ship a project, get an access URL, list their published projects, or build an Android APK. No Python required — call the HTTP APIs directly.
+globs:
+alwaysApply: false
+---
+
+# Publisher — publish HTML projects & build APKs
+
+Platform: `https://ai-pub.pushwebly.com`
+
+Skill version: see the `version` field in SKILL.md frontmatter.
+
+> Canonical tool names / paths are `project_*` and `/api/projects`. The old
+> `game_*` names, `/api/games` paths, and `gameId` field still work (backend
+> aliases) but are deprecated — use the `project_*` forms. Always say "project".
+
+## Principles
+- **Conversation first.** Users phrase things vaguely ("publish this", "I want an
+  APK for my phone"). Infer the intent and complete the flow; only ask for what's
+  genuinely missing.
+- **No Python.** Get tokens, save credentials, and call APIs yourself with `curl`
+  and your file tools. Never ask the user to install or run Python.
+
+## Intent → action
+| User roughly says | Action (tool) | Ask only if missing |
+|---|---|---|
+| publish / ship / put online | `project_publish` | zip path, project name |
+| want an APK / installable on phone | `project_publish_and_build_apk` | zip path, project name |
+| build APK for a project I already published | `project_build_apk` | id (find via `project_list`) |
+| make an app private/public, add/remove password | `project_update_visibility` | app URL, target visibility (optional password if private) |
+| what have I published / my projects | `project_list` | — |
+| log in / register | get token | username, password |
+
+When unsure: "Just publish, or publish and build an Android APK too?"
+
+## Version check (first, non-blocking)
+Before the publish flow, self-check the skill version, then continue regardless of the result
+(never block publishing). Read the local `version` from frontmatter, then:
+```bash
+curl -s https://ai-pub.pushwebly.com/api/skill/latest-version
+```
+If `data.version` is newer than local, you MUST output an update notice that INCLUDES the actual
+download URL (never omit it or leave a placeholder), chosen by the user's OS: Windows →
+`data.downloadUrlWindows`, macOS → `data.downloadUrlMac`, else fall back to `data.downloadUrl`.
+Write the URL as a clickable Markdown link `[URL](URL)`, not wrapped in backticks/inline code.
+Output the notice in the SAME language the user is conversing in (Chinese if they write Chinese,
+English if English) — do not hard-code English.
+If equal/newer, stay silent; if the request fails, silently skip. Always proceed next.
+Comparison: `major.minor.patch`, compare each segment as integers left to right (not as
+strings — `1.10.0` > `1.9.0`).
+
+## Publish flow (in order)
+1. **Account**: have token/local creds → next. None → ask username+password, login/register
+   (auto-registers; on invalid creds tell the backend reason and let them retry).
+2. **Public or private?** Ask: "public (anyone with the link) or private (needs a 6-character password)?"
+3. **Branch**: public → publish (`visibility=public`), return link. private → ask whether
+   the user wants a custom password; if yes publish with `visibility=private` +
+   `access_password=<6 digits or letters>`, if no publish with only `visibility=private`
+   and the backend auto-generates a 6-char password (returned in the response). Relay the
+   clean URL and the final password separately; tell the user to type the password on the page.
+   Do not append the password to the URL.
+4. Default to public if unspecified. Password is 6 digits or letters; validate a custom one, otherwise the backend generates it.
+
+## Token (no Python)
+Need a Bearer token for every publishing call. Order:
+1. Token already given in chat → use it.
+2. `~/.publisher/config.json` exists → read username/password, re-login to refresh.
+3. Neither → ask for username + password (auto-registers if new), then login & save.
+
+Login (write body to a temp `login.json` first to avoid quote-escaping):
+```bash
+curl -s -X POST https://ai-pub.pushwebly.com/api/auth/login-or-register \
+  -H "Content-Type: application/json" -d @login.json
+```
+`data.token` → header `Authorization: Bearer <token>`. Delete the temp file.
+
+Save credentials by writing `~/.publisher/config.json` yourself:
+```json
+{"baseUrl":"https://ai-pub.pushwebly.com","username":"alice","password":"...","authorization":"Bearer <TOKEN>","userId":1}
+```
+On Linux/Mac `chmod 600` it. Clear = delete the file. On 401, re-login once and retry.
+Never commit credentials; only store them in `~/.publisher`.
+
+## Operations (HTTP)
+Publish (public):
+```bash
+curl -s -X POST https://ai-pub.pushwebly.com/api/projects/publish \
+  -H "Authorization: Bearer <TOKEN>" -F "project_name=demo" -F "file=@demo.zip"
+```
+Publish (private; access_password optional, 6 digits or letters, auto-generated if omitted):
+```bash
+curl -s -X POST https://ai-pub.pushwebly.com/api/projects/publish \
+  -H "Authorization: Bearer <TOKEN>" -F "project_name=demo" -F "file=@demo.zip" \
+  -F "visibility=private" -F "access_password=a1b2c3"
+```
+List:
+```bash
+curl -s https://ai-pub.pushwebly.com/api/projects/my -H "Authorization: Bearer <TOKEN>"
+```
+Change visibility (public <-> private; URL in, backend parses the id and checks ownership —
+only your own apps). `access_password` optional, only when switching to private:
+```bash
+curl -s -X PATCH https://ai-pub.pushwebly.com/api/projects/visibility \
+  -H "Authorization: Bearer <TOKEN>" -H "Content-Type: application/json" \
+  -d '{"url":"https://ai-pub.pushwebly.com/play/aB3xYz/","visibility":"private","accessPassword":"a1b2c3"}'
+```
+Build APK for existing project:
+```bash
+curl -s -X POST https://ai-pub.pushwebly.com/api/apk/build \
+  -H "Authorization: Bearer <TOKEN>" -H "Content-Type: application/json" -d '{"projectId":12}'
+```
+Publish + build in one step (recommended; add visibility/access_password for private):
+```bash
+curl -s -X POST https://ai-pub.pushwebly.com/api/apk/publish-and-build \
+  -H "Authorization: Bearer <TOKEN>" -F "project_name=airplane-war" -F "file=@project.zip"
+```
+
+## Pre-publish checks
+`.zip` format; contains `index.html`/`index.htm`; project name non-empty; valid token.
+
+## Report back
+On success show: project name, access URL (for private apps give the clean URL and state the
+access password separately — do not append `?pwd=` to the URL), and APK download link if built
+("transfer the APK to your phone to install"). On failure state the reason (no index.html,
+token expired, bad zip path, empty name, private app's custom password invalid (6 digits or
+letters; auto-generated if omitted), APK build timeout ~2-3 min, server missing Android SDK).

@@ -2,7 +2,7 @@
 
 English | [简体中文](./README-zh.md)
 
-Publish HTML frontend games to the AI Game MCP platform.
+Publish HTML frontend projects to the publishing platform.
 
 ## Install to Claude Code
 
@@ -20,43 +20,42 @@ Then use the Skill inside Claude Code.
 https://ai-pub.pushwebly.com
 ```
 
-## Save Credentials for Automatic Token Retrieval
+## How to use (no Python required)
 
-On first use, run this in the Skill directory:
+Just tell Claude what you want in plain language, for example:
 
-```bash
-python scripts/save-credentials.py
-```
+- "Publish this project for me" (give it the zip path)
+- "I want an APK I can install on my phone"
+- "What projects have I published?"
 
-Enter your username and password when prompted. The script will automatically
-log in / register and save the configuration to:
+Claude infers the action, asks only for what's missing (username/password on
+first use), logs in, and completes the workflow directly via the MCP tools or
+HTTP APIs. **You don't need to install or run anything.** See `SKILL.md` for the
+full agent workflow.
 
-```text
-~/.ai-game-publisher/config.json
-```
+Credentials are saved locally to `~/.publisher/config.json` so subsequent runs
+refresh the token automatically.
 
-On subsequent uses, run:
+## Optional: Python scripts (advanced / CI users)
 
-```bash
-python scripts/get-token.py
-```
-
-It will refresh the token using the saved credentials and output:
-
-```text
-Bearer <TOKEN>
-```
-
-Clear the locally stored credentials:
+If you prefer the command line, the `scripts/` folder offers an equivalent path.
+Most users can ignore this.
 
 ```bash
-python scripts/clear-credentials.py
+python scripts/save-credentials.py   # save username/password, fetch token
+python scripts/get-token.py          # refresh and print "Bearer <TOKEN>"
+python scripts/clear-credentials.py  # delete local credentials
 ```
+
+Saved to `~/.publisher/config.json`.
 
 ## MCP Tools
 
+> Canonical names are `project_*` (preferred). The old `game_*` names still work
+> as deprecated aliases. Describe them as "project" operations to users.
+
 - `user_login_or_register`
-- `game_publish`
-- `game_list`
-- `game_build_apk`
-- `game_publish_and_build_apk`
+- `project_publish`
+- `project_list`
+- `project_build_apk`
+- `project_publish_and_build_apk`

@@ -12,7 +12,7 @@ them as Android APKs.
 Platform URL:
 
 ```text
-https://ai-pub.pushwebly.com
+https://pushwebly.com
 ```
 
 Use "project" in user-facing messages. The canonical API paths are

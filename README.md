@@ -38,8 +38,6 @@ refresh the token automatically.
 
 ## Documentation
 
-Multi-language docs, switch language via the `lan` parameter (zh | en | ja | ko):
-
 - [中文文档](https://pushwebly.com/#/preview-docs?type=windows&lan=zh)
 - [English Docs](https://pushwebly.com/#/preview-docs?type=windows&lan=en)
 - [日本語ドキュメント](https://pushwebly.com/#/preview-docs?type=windows&lan=ja)

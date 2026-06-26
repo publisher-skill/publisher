@@ -20,7 +20,7 @@ Then use the Skill inside Claude Code.
 https://pushwebly.com
 ```
 
-## How to use (no Python required)
+## How to use
 
 Just tell Claude what you want in plain language, for example:
 
@@ -36,7 +36,14 @@ full agent workflow.
 Credentials are saved locally to `~/.publisher/config.json` so subsequent runs
 refresh the token automatically.
 
- 
+## Documentation
+
+Multi-language docs, switch language via the `lan` parameter (zh | en | ja | ko):
+
+- [中文文档](https://pushwebly.com/#/preview-docs?type=windows&lan=zh)
+- [English Docs](https://pushwebly.com/#/preview-docs?type=windows&lan=en)
+- [日本語ドキュメント](https://pushwebly.com/#/preview-docs?type=windows&lan=ja)
+- [한국어 문서](https://pushwebly.com/#/preview-docs?type=windows&lan=ko)
 
 ## MCP Tools
 
@@ -46,5 +53,6 @@ refresh the token automatically.
 - `user_login_or_register`
 - `project_publish`
 - `project_list`
+- `project_update_visibility`
 - `project_build_apk`
 - `project_publish_and_build_apk`

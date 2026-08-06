@@ -2,7 +2,7 @@
 
 [English](./README.md) | 简体中文
 
-##AI发布平台
+## AI发布平台
 
 把 HTML 前端项目发布到发布平台。
 

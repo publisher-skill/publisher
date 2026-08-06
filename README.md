@@ -2,6 +2,7 @@
 
 English | [简体中文](./README-zh.md)
 
+##  AI publishing platform 
 Publish HTML frontend projects to the publishing platform.
 
 ## Install to Claude Code
